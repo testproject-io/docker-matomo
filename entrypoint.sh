@@ -59,6 +59,12 @@ unset SSMTP_PASSWORD
 echo "Initializing Matomo files / folders..."
 mkdir -p /data/config /data/geoip /data/misc /data/plugins /data/session /data/tmp /etc/supervisord /var/log/supervisord
 
+# Copy config.ini.php if available
+if [ -f /etc/config.ini.php ]; then
+  echo "Copying config.ini.php..."
+  cp -f /etc/config.ini.php /data/config/config.ini.php
+fi
+
 # Sidecar cron container ?
 if [ "$1" == "/usr/local/bin/cron" ]; then
   echo ">>"

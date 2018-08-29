@@ -49,9 +49,9 @@ ADD assets /
 RUN chmod a+x /entrypoint.sh /usr/local/bin/* \
   && chown -R nginx. /var/lib/nginx /var/log/nginx /var/log/php7 /var/tmp/nginx /var/www /work
 
-EXPOSE 80
+EXPOSE 8080
 WORKDIR "/var/www"
-VOLUME [ "/data" ]
+#VOLUME [ "/data" ]
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 CMD [ "/usr/bin/supervisord", "-c", "/etc/supervisord.conf" ]
