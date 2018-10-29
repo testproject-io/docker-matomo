@@ -1,11 +1,11 @@
 FROM alpine:3.8
-MAINTAINER CrazyMax <crazy-max@users.noreply.github.com>
 
 ARG BUILD_DATE
 ARG VCS_REF
 ARG VERSION
 
-LABEL org.label-schema.build-date=$BUILD_DATE \
+LABEL maintainer="CrazyMax" \
+  org.label-schema.build-date=$BUILD_DATE \
   org.label-schema.name="matomo" \
   org.label-schema.description="Matomo (formerly Piwik) based on Alpine Linux and Nginx" \
   org.label-schema.version=$VERSION \
@@ -21,7 +21,7 @@ RUN apk --update --no-cache add \
     php7-opcache php7-openssl php7-pdo php7-pdo_mysql php7-redis php7-session php7-simplexml php7-xml php7-zlib \
   && rm -rf /var/cache/apk/* /var/www/* /tmp/*
 
-ENV MATOMO_VERSION="3.6.0" \
+ENV MATOMO_VERSION="3.6.1" \
   CRONTAB_PATH="/var/spool/cron/crontabs"
 
 RUN apk --update --no-cache add -t build-dependencies \
