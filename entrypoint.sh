@@ -4,18 +4,21 @@ function runas_nginx() {
   su - nginx -s /bin/sh -c "$1"
 }
 
-TZ=${TZ:-"UTC"}
+TZ=${TZ:-UTC}
 
-MEMORY_LIMIT=${MEMORY_LIMIT:-"256M"}
-UPLOAD_MAX_SIZE=${UPLOAD_MAX_SIZE:-"16M"}
-OPCACHE_MEM_SIZE=${OPCACHE_MEM_SIZE:-"128"}
+MEMORY_LIMIT=${MEMORY_LIMIT:-256M}
+UPLOAD_MAX_SIZE=${UPLOAD_MAX_SIZE:-16M}
+OPCACHE_MEM_SIZE=${OPCACHE_MEM_SIZE:-128}
+REAL_IP_FROM=${REAL_IP_FROM:-0.0.0.0/32}
+REAL_IP_HEADER=${REAL_IP_HEADER:-X-Forwarded-For}
+LOG_IP_VAR=${LOG_IP_VAR:-remote_addr}
 
-LOG_LEVEL=${LOG_LEVEL:-"WARN"}
-SIDECAR_CRON=${SIDECAR_CRON:-"0"}
+LOG_LEVEL=${LOG_LEVEL:-WARN}
+SIDECAR_CRON=${SIDECAR_CRON:-0}
 
-SSMTP_PORT=${SSMTP_PORT:-"25"}
-SSMTP_HOSTNAME=${SSMTP_HOSTNAME:-"$(hostname -f)"}
-SSMTP_TLS=${SSMTP_TLS:-"NO"}
+SSMTP_PORT=${SSMTP_PORT:-25}
+SSMTP_HOSTNAME=${SSMTP_HOSTNAME:-$(hostname -f)}
+SSMTP_TLS=${SSMTP_TLS:-NO}
 
 # Timezone
 echo "Setting timezone to ${TZ}..."
@@ -35,14 +38,16 @@ sed -e "s/@OPCACHE_MEM_SIZE@/$OPCACHE_MEM_SIZE/g" \
 
 # Nginx
 echo "Setting Nginx configuration..."
-sed -e "s/@UPLOAD_MAX_SIZE@/$UPLOAD_MAX_SIZE/g" \
+sed -e "s#@UPLOAD_MAX_SIZE@#$UPLOAD_MAX_SIZE#g" \
+  -e "s#@REAL_IP_FROM@#$REAL_IP_FROM#g" \
+  -e "s#@REAL_IP_HEADER@#$REAL_IP_HEADER#g" \
+  -e "s#@LOG_IP_VAR@#$LOG_IP_VAR#g" \
   /tpls/etc/nginx/nginx.conf > /etc/nginx/nginx.conf
 
 # SSMTP
 echo "Setting SSMTP configuration..."
 if [ -z "$SSMTP_HOST" ] ; then
   echo "WARNING: SSMTP_HOST must be defined if you want to send emails"
-  cp -f /etc/ssmtp/ssmtp.conf.or /etc/ssmtp/ssmtp.conf
 else
   cat > /etc/ssmtp/ssmtp.conf <<EOL
 mailhub=${SSMTP_HOST}:${SSMTP_PORT}
@@ -60,7 +65,7 @@ unset SSMTP_PASSWORD
 
 # Init Matomo
 echo "Initializing Matomo files / folders..."
-mkdir -p /data/config /data/geoip /data/misc /data/plugins /data/session /data/tmp /etc/supervisord /var/log/supervisord
+mkdir -p /data/config /data/misc /data/plugins /data/session /data/tmp /etc/supervisord /var/log/supervisord
 
 # Copy config.ini.php if available
 if [ -f /etc/config.ini.php ]; then
@@ -89,16 +94,6 @@ if [ ! -d /data/misc/user ]; then
     mv -f /var/www/misc/user /data/misc/
   fi
   ln -sf /data/misc/user /var/www/misc/user
-fi
-
-if [ ! -f /data/geoip/GeoIPv6City.dat ]; then
-  echo "Copying GeoLiteCity..."
-  cp -f /work/GeoIPv6City.dat /data/geoip/GeoIPv6City.dat
-fi
-
-if [ ! -f /data/geoip/GeoIPv6Country.dat ]; then
-  echo "Copying GeoLiteCity..."
-  cp -f /work/GeoIPv6Country.dat /data/geoip/GeoIPv6Country.dat
 fi
 
 # Fix perms

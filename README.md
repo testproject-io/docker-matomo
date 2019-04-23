@@ -2,10 +2,11 @@
 
 <p align="center">
   <a href="https://microbadger.com/images/crazymax/matomo"><img src="https://images.microbadger.com/badges/version/crazymax/matomo.svg?style=flat-square" alt="Version"></a>
-  <a href="https://travis-ci.org/crazy-max/docker-matomo"><img src="https://img.shields.io/travis/crazy-max/docker-matomo/master.svg?style=flat-square" alt="Build Status"></a>
+  <a href="https://travis-ci.com/crazy-max/docker-matomo"><img src="https://img.shields.io/travis/com/crazy-max/docker-matomo/master.svg?style=flat-square" alt="Build Status"></a>
   <a href="https://hub.docker.com/r/crazymax/matomo/"><img src="https://img.shields.io/docker/stars/crazymax/matomo.svg?style=flat-square" alt="Docker Stars"></a>
   <a href="https://hub.docker.com/r/crazymax/matomo/"><img src="https://img.shields.io/docker/pulls/crazymax/matomo.svg?style=flat-square" alt="Docker Pulls"></a>
   <a href="https://quay.io/repository/crazymax/matomo"><img src="https://quay.io/repository/crazymax/matomo/status?style=flat-square" alt="Docker Repository on Quay"></a>
+  <a href="https://www.codacy.com/app/crazy-max/docker-matomo"><img src="https://img.shields.io/codacy/grade/c6bb409d02314ecf9928750de89d9d8c.svg?style=flat-square" alt="Code Quality"></a>
   <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JP85E7WHT33FL"><img src="https://img.shields.io/badge/donate-paypal-7057ff.svg?style=flat-square" alt="Donate Paypal"></a>
 </p>
 
@@ -18,11 +19,12 @@ If you are interested, [check out](https://hub.docker.com/r/crazymax/) my other 
 
 ### Included
 
-* Alpine Linux 3.8, Nginx, PHP 7.2
+* Alpine Linux 3.9, Nginx, PHP 7.2
 * Tarball authenticity checked during building process
 * Config, plugins and user preferences in the same folder
-* GeoLite data created by [MaxMind](http://www.maxmind.com) for geolocation
-* Cron tasks to archive Matomo reports and update GeoLite data as a ["sidecar" container](#cron)
+* GeoIP 2 databases created by [MaxMind](http://www.maxmind.com) for geolocation
+* Unifont for languages using [unicode characters](https://matomo.org/faq/how-to-install/faq_142/)
+* Cron tasks to archive Matomo reports and update GeoIP 2 databases as a ["sidecar" container](#cron)
 * Ability to pass [additional options](https://matomo.org/docs/setup-auto-archiving/#help-for-corearchive-command) during cron archive
 * Plugins and config are kept across upgrades of this image
 * [SSMTP](https://linux.die.net/man/8/ssmtp) for SMTP relay to send emails
@@ -40,32 +42,36 @@ If you are interested, [check out](https://hub.docker.com/r/crazymax/) my other 
 
 ### Environment variables
 
-* `TZ` : The timezone assigned to the container (default: `UTC`)
-* `MEMORY_LIMIT` : PHP memory limit (default: `256M`)
-* `UPLOAD_MAX_SIZE` : Upload max size (default: `16M`)
-* `OPCACHE_MEM_SIZE` : PHP OpCache memory consumption (default: `128`)
-* `LOG_LEVEL` : [Log level](https://matomo.org/faq/troubleshooting/faq_115/) of Matomo UI (default: `WARN`)
-* `SIDECAR_CRON` : Mark the container as a sidecar cron job (default: `0`)
+* `TZ` : The timezone assigned to the container (default `UTC`)
+* `MEMORY_LIMIT` : PHP memory limit (default `256M`)
+* `UPLOAD_MAX_SIZE` : Upload max size (default `16M`)
+* `OPCACHE_MEM_SIZE` : PHP OpCache memory consumption (default `128`)
+* `REAL_IP_FROM` : Trusted addresses that are known to send correct replacement addresses (default `0.0.0.0/32`)
+* `REAL_IP_HEADER` : Request header field whose value will be used to replace the client address (default `X-Forwarded-For`)
+* `LOG_IP_VAR` : Use another variable to retrieve the remote IP address for access [log_format](http://nginx.org/en/docs/http/ngx_http_log_module.html#log_format) on Nginx. (default `remote_addr`)
+* `LOG_LEVEL` : [Log level](https://matomo.org/faq/troubleshooting/faq_115/) of Matomo UI (default `WARN`)
+* `SIDECAR_CRON` : Mark the container as a sidecar cron job (default `0`)
 * `SSMTP_HOST` : SMTP server host
-* `SSMTP_PORT` : SMTP server port (default: `25`)
-* `SSMTP_HOSTNAME` : Full hostname (default: `$(hostname -f)`)
+* `SSMTP_PORT` : SMTP server port (default `25`)
+* `SSMTP_HOSTNAME` : Full hostname (default `$(hostname -f)`)
 * `SSMTP_USER` : SMTP username
 * `SSMTP_PASSWORD` : SMTP password
-* `SSMTP_TLS` : SSL/TLS (default: `NO`)
+* `SSMTP_TLS` : SSL/TLS (default `NO`)
 
 The following environment variables are only used if you run the container as ["sidecar" mode](#cron) :
 
+* `SIDECAR_CRON` : Set to `1` to enable sidecar cron mode (default `0`)
 * `ARCHIVE_OPTIONS` : Pass [additional options](https://matomo.org/docs/setup-auto-archiving/#help-for-corearchive-command) during cron archive
-* `CRON_GEOIP` : Periodically update GeoIP data (disabled if empty ; ex `0 4 * * *`)
+* `CRON_GEOIP` : Periodically update GeoIP 2 databases (disabled if empty ; eg. `0 4 * * *`)
 * `CRON_ARCHIVE` : Periodically execute Matomo [archive](https://matomo.org/docs/setup-auto-archiving/#linuxunix-how-to-set-up-a-crontab-to-automatically-archive-the-reports) (disabled if empty ; ex `0 * * * *`)
 
 ### Volumes
 
-* `/data` : Contains GeoIP databases, configuration, installed plugins (not core ones), tmp and user folders to store your [custom logo](https://matomo.org/faq/new-to-piwik/faq_129/)
+* `/data` : Contains GeoIP 2 databases, configuration, installed plugins (not core ones), tmp and user folders to store your [custom logo](https://matomo.org/faq/new-to-piwik/faq_129/)
 
 ### Ports
 
-* `80` : HTTP port
+* `8000` : HTTP port
 
 ## Use this image
 
@@ -80,12 +86,20 @@ docker-compose up -d
 docker-compose logs -f
 ```
 
+### Swarm
+
+Deploy this image in your Swarm cluster. Detailed instructions [can be found here](examples/swarm).
+
+### Kubernetes
+
+Deploy this image in your kubernetes cluster. Detailed instructions [can be found here](examples/kubernetes).
+
 ### Command line
 
 You can also use the following minimal command :
 
 ```bash
-docker run -d -p 80:80 --name matomo \
+docker run -d -p 8000:8000 --name matomo \
   -v $(pwd)/data:/data \
   crazymax/matomo:latest
 ```
@@ -101,7 +115,7 @@ On a HA environment, **enable backend sticky sessions** on your load balancer.
 If you want to enable the cron job, you have to run a "sidecar" container like in the [docker-compose file](examples/compose/docker-compose.yml) or run a simple container like this :
 
 ```bash
-docker run -d --name matomo-cron \
+docker run -d --name matomo_cron \
   --env-file $(pwd)/matomo.env \
   -e "SIDECAR_CRON=1" \
   -e "CRON_ARCHIVE=0 * * * *" \
@@ -114,11 +128,19 @@ Then if you have enabled `CRON_ARCHIVE` to automatically archive the reports, yo
 
 ![Disable Matomo archiving from browser](.res/disable-archive-reports-browser.png)
 
-### Change location provider
+### GeoIP 2
 
-As GeoIP module for Nginx is installed and uses GeoIP data, you have to select **GeoIP (HTTP Server Module)** in **System > Geolocation** :
+This image already uses GeoIP 2 databases of [MaxMind](https://www.maxmind.com/) through Nginx. You just have to install and activate the [GeoIP 2 plugin](https://plugins.matomo.org/GeoIP2).
 
-![Change location provider](.res/location-provider.png)
+After that, you have to select **GeoIP 2 (HTTP Server Module)** in **System > Geolocation** :
+
+![GeoIP 2 location provider](.res/geoip2-location-provider.png)
+
+And activate GeoIP 2 server module for Nginx in **System > General settings > Configuration for server variables used by GeoIP 2 server modules** :
+
+![GeoIP 2 server module](.res/geoip2-server-module.png)
+
+> :warning: GeoIP (Legacy) is now deprecated and has been removed since 3.8.0 tag.
 
 ### Behind a reverse proxy ?
 

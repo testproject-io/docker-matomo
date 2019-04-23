@@ -1,8 +1,63 @@
 # Changelog
 
+## 3.9.1-RC2 (2019/04/14)
+
+* Add `LOG_IP_VAR` environment variable
+
+## 3.9.1-RC1 (2019/03/21)
+
+* Matomo 3.9.1
+
+## 3.9.0-RC1 (2019/03/19)
+
+* Matomo 3.9.0
+* Enable gzip for type application/javascript (PR #17)
+
+## 3.8.1-RC3 (2019/03/06)
+
+* Fix GeoIP2 autonomous system key (PR #16)
+
+## 3.8.1-RC2 (2019/02/10)
+
+* Add unifont for languages using [unicode characters](https://matomo.org/faq/how-to-install/faq_142/)
+
+## 3.8.1-RC1 (2019/01/28)
+
+* Matomo 3.8.1
+
+## 3.8.0-RC1 (2019/01/21)
+
+* Matomo 3.8.0
+* Bind to unprivileged port : `8000`
+* Remove legacy GeoIP
+
+## 3.7.0-RC4 (2018/11/24)
+
+* `/js/` tracking codes not working (Issue #11)
+
+## 3.7.0-RC3 (2018/11/24)
+
+* Add `REAL_IP_FROM` and `REAL_IP_HEADER` environment variables (Issue #8)
+* Typo for some fastcgi_param
+
+## 3.7.0-RC2 (2018/11/23)
+
+* Add compatibility with [GeoIP 2 plugin](https://plugins.matomo.org/GeoIP2) (Issue #7)
+* Add GeoIP 2 databases Country, City and ASN
+* Add [ngx_http_geoip2_module](https://github.com/leev/ngx_http_geoip2_module) nginx module
+* Move GeoIP databases to `/etc/nginx/geoip`
+
+> :warning: **UPGRADE NOTES**
+> GeoIP databases moved to `/etc/nginx/geoip`. You can safely remove `./data/geoip` folder.
+
+## 3.7.0-RC1 (2018/11/19)
+
+* Matomo 3.7.0
+* Coding style
+
 ## 3.6.1-RC1 (2018/10/18)
 
-* Upgrade to Matomo 3.6.1
+* Matomo 3.6.1
 
 ## 3.6.0-RC2 (2018/09/16)
 
@@ -14,7 +69,7 @@
 
 ## 3.6.0-RC1 (2018/08/29)
 
-* Upgrade to Matomo 3.6.0
+* Matomo 3.6.0
 * Alpine 3.8
 * PHP 7.2
 
@@ -24,7 +79,7 @@
 
 ## 3.5.1-RC1 (2018/05/25)
 
-* Upgrade to Matomo 3.5.1
+* Matomo 3.5.1
 
 ## 3.5.0-RC4 (2018/05/18)
 
@@ -42,7 +97,7 @@
 
 ## 3.5.0-RC1 (2018/05/09)
 
-* Upgrade to Matomo 3.5.0
+* Matomo 3.5.0
 
 ## 3.4.0-RC2 (2018/04/26)
 
@@ -50,7 +105,7 @@
 
 ## 3.4.0-RC1 (2018/03/29)
 
-* Upgrade to Matomo 3.4.0
+* Matomo 3.4.0
 
 ## 3.3.0-RC8 (2018/03/09)
 
